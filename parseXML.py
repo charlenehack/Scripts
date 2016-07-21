@@ -13,7 +13,7 @@ try:
 except Exception:
     print "Input the parse file"
 
-#拿到根节点名称
+#拿到根节点名称,就是XML文件最外层的节点名称，这里是log4j:configuration
 root_ele = xml_dom.documentElement
 
 #通过根节点，获取根节点下的子节点。返回一个节点列表对象。这里获取根下appender
