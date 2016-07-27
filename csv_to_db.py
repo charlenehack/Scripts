@@ -19,12 +19,12 @@ try:
         print e
     csv_obj = csv.reader(f)
     for line in csv_obj:
-        insert_sql = "INSERT INTO test VALUES({id},{value},{type},{start_date},{end_date})".format(
-                   id=int(line[0]),value=int(line[1]),type=int(line[2]),
-                   start_date="'"+line[3].replace('/','-')+"'",
-                   end_date="'"+line[4].replace('/','-')+"'"
+        insert_sql = "INSERT INTO test VALUES({id},{value},{type},'{start_date'},'{end_date}','{comment}')".format(
+                   id=int(line[0]),value=int(line[1]),type=int(line[2]),start_date=line[3].replace('/','-'),
+                   end_date=line[4].replace('/','-'),comment=u'中文语言'.encode('utf8')
                    )
         cur = conn.cursor()
+        print insert_sql
         cur.execute(insert_sql)
         conn.commit()
         cur.close()
