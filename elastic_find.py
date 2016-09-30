@@ -6,10 +6,13 @@ from pprint import pprint
 
 
 host = '192.168.0.65'
-es = ES([{'host':host,'port':9200}])
+try:
+    es = ES([{'host':host,'port':9200}])
+except Exception,e:
+    print e
 
 res = es.search(
-  index='graylog_0',   #索引名称，不指定时为ALL
+  #index='graylog_0',   #索引名称，不指定时为ALL
   size=20,             #每次取20条,不指定默认取10条
   sort=['timestamp'],  #用以排序字段
   from_=5,             #从第五条开始取
@@ -18,19 +21,20 @@ res = es.search(
   body={
       #DSL查询数据，定义想要的数据
       'query':{
-          'match':{
-              'source':'development-mobile',
-              #'message':u'18616758000',
-              #'operator':'and'
-           },
-      
+           'bool':{
+                'must':[
+                     {'match':{'source':'app01'}},
+                     {'match':{'message':'from'}},
+
+                 ]  
+            } 
        },
 
        #过滤数据，这里根据日期过虑。获取最近一天的数据
        'filter':{
            'range':{
                 'timestamp':{
-                   'gte':'now-1d/d',
+                   'gte':'now-5d/d',
                     'lte':'now/d',
                     #'time_zone':'+08:00'
                  }
