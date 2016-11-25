@@ -5,7 +5,7 @@
 
 import time
 from Queue import Queue
-from threading import Thread
+from threading import Thread,Event
 from elasticsearch import Elasticsearch as ES
 #import re
 
@@ -13,6 +13,7 @@ from elasticsearch import Elasticsearch as ES
 
 #定义搜索函数，根据关键字从Elasticsear中取出匹配内容
 def  search(env,message,size,start,q):
+    ent = Event()
     host = '10.168.169.51'
     client = ES([{'host':host,'port':9200}])
     resp = client.search(
@@ -22,8 +23,9 @@ def  search(env,message,size,start,q):
         fields=['timestamp','full_message','source'],
         body={
             'query':{
-                'bool':{
-                    'must':[
+                'filtered':{
+                    'query':[
+                        {'query_string':{'query':'"'+message+'"'}},
                      ]
                  }
             },
@@ -31,12 +33,12 @@ def  search(env,message,size,start,q):
                 'and':[
                     {'term':{'environment':env}}, #指定环境
                     {'range':{'timestamp':{'from':'2016-11-18 16:00:00.000','to':'2016-11-23 16:00:00.000'}}},
-                    {'regexp':{'full_message':message}},#regexp不支持中文，中文会匹配不到
+                    #{'regexp':{'full_message':message}},#regexp不支持中文，中文会匹配不到
                 ]
             }              
         }
     )
-    q.put(resp)
+    q.put((resp,ent))
 
 #定义时间加八小时函数，因为默认ELK中的时间为标准UTC时间。
 def time_plus(time_string):
@@ -49,7 +51,7 @@ def time_plus(time_string):
 
 #定义处理返回结果函数，写入文件
 def write_f(msg,q):
-    resp = q.get()
+    resp,ent = q.get()
     total = resp['hits']['total']
     print u'%s 关键词匹配 到   %s行'  %(msg,total)
     for hit in resp['hits']['hits']:
@@ -58,6 +60,7 @@ def write_f(msg,q):
         host = hit['fields']['source'][0]
         with open(msg+'.log','a+') as f:
             f.write(time_plus(time_msg)+':'+host.encode('utf8')+'- '+log_msg.encode('utf8')+'\n')
+    ent.set()
         
         
 #主程序开始
@@ -65,10 +68,10 @@ if __name__ == '__main__':
     time.clock()
     q = Queue()
     msgs = [
-        '216859',
-        '216855',
+        '1182856',
+        u'发送数据', #中文切记要加u字符串，英文不需要
     ]
-    env = 'PRODUCTION'
+    env = 'PRODUCTION'A
     size = 20000
     start = 0
     search_ts = []
