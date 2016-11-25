@@ -71,7 +71,7 @@ if __name__ == '__main__':
         '1182856',
         u'发送数据', #中文切记要加u字符串，英文不需要
     ]
-    env = 'PRODUCTION'A
+    env = 'PRODUCTION'
     size = 20000
     start = 0
     search_ts = []
