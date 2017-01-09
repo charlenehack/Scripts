@@ -9,7 +9,7 @@ import time
 time.clock()
 user = 'sa'
 passwd = 'xsd123!@#'
-host = '192.168.0.71'
+host = '192.168.0.74444'
 conn = pymssql.connect(host,user,passwd,'xueshandai_dev')
 cursor = conn.cursor()
 cursor.execute('SELECT top 10 id,username,password,reg_time from member')
