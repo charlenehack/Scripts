@@ -4,7 +4,7 @@
 import threading
 from time import sleep,ctime
 
-#1.通过定义一个类，来启动多线程。类继承自threading.Thread.并定义run方法
+#1.通过定义一个类，来启动多线程。类继承自threading.Thread.并实现run方法
 
 class Cheng(threading.Thread):
     def __init__(self,func,args):
@@ -32,3 +32,4 @@ if __name__ == "__main__":
     for t in threads:
         t.join()
     print "All is over"
+    #实际上t.run()就是自带join()功能。如果用t.run()主进程会等待所有子进程完成后再继续执行。
