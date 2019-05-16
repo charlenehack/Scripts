@@ -13,5 +13,7 @@ def baozhang(func):
 def test_func(*args,**kwargs):
     print args[0]
     
- 
- test_func('this func')
+# Equal 
+# test_func = baozhang(test_func)
+# test_func("this func")
+test_func('this func')
